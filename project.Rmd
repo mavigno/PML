@@ -9,7 +9,12 @@ output:
 
 Summary
 ================================================================================
-As part of the Practical Machine Learning course from Johns Hopkins on Coursera, this work will try to predict the manner which subjects that where using devices that permit to collect dat about their activities did exercices. More information about the data can be found at this [link](http://groupware.les.inf.puc-rio.br/har)
+As part of the Practical Machine Learning course from Johns Hopkins on Coursera, this work will try to predict the manner which subjects that where using devices that permit to collect dat about their activities did exercices. More information about the data can be found at this [link](http://groupware.les.inf.puc-rio.br/har).
+We choose the Random Forest method to train the data, and the accuracy obtainded was:
+
+- 100% for the in sample data.
+- 99.3% for the out of sample data.
+
 ```{r, echo=TRUE}
 #setup environment
 library(caret)
@@ -83,6 +88,7 @@ In sample accuracy
 train.predict <- predict(model,training)
 confusionMatrix(train.predict,training$classe)
 ```
+The accuracy show by the confusionMatrix is 100% for the in sample predict.
 
 Out of sample accuracy
 ======================
@@ -90,8 +96,9 @@ Out of sample accuracy
 test.predict <- predict(model,testing)
 confusionMatrix(test.predict,testing$classe)
 ```
+The accuracy show by the confusionMatrix is 99.3% for the out of sample predict.
 
-Answering the prediction assignment
+Answering the Course Project submission
 ======================
 ```{r, echo=TRUE,cache=TRUE}
 answers <- predict(model,pml_testing2)

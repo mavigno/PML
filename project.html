@@ -61,7 +61,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 
 <div id="summary" class="section level1">
 <h1><span class="header-section-number">1</span> Summary</h1>
-<p>As part of the Practical Machine Learning course from Johns Hopkins on Coursera, this work will try to predict the manner which subjects that where using devices that permit to collect dat about their activities did exercices. More information about the data can be found at this <a href="http://groupware.les.inf.puc-rio.br/har">link</a></p>
+<p>As part of the Practical Machine Learning course from Johns Hopkins on Coursera, this work will try to predict the manner which subjects that where using devices that permit to collect dat about their activities did exercices. More information about the data can be found at this <a href="http://groupware.les.inf.puc-rio.br/har">link</a>. We choose the Random Forest method to train the data, and the accuracy obtainded was:</p>
+<ul>
+<li>100% for the in sample data.</li>
+<li>99.3% for the out of sample data.</li>
+</ul>
 <pre class="r"><code>#setup environment
 library(caret)</code></pre>
 <pre><code>## Loading required package: lattice
@@ -177,6 +181,7 @@ confusionMatrix(train.predict,training$classe)</code></pre>
 ## Detection Rate          0.284    0.194    0.174    0.164    0.184
 ## Detection Prevalence    0.284    0.194    0.174    0.164    0.184
 ## Balanced Accuracy       1.000    1.000    1.000    1.000    1.000</code></pre>
+<p>The accuracy show by the confusionMatrix is 100% for the in sample predict.</p>
 </div>
 <div id="out-of-sample-accuracy" class="section level1">
 <h1><span class="header-section-number">7</span> Out of sample accuracy</h1>
@@ -213,9 +218,10 @@ confusionMatrix(test.predict,testing$classe)</code></pre>
 ## Detection Rate          0.284    0.192    0.172    0.160    0.183
 ## Detection Prevalence    0.285    0.194    0.176    0.161    0.184
 ## Balanced Accuracy       0.999    0.996    0.992    0.989    0.998</code></pre>
+<p>The accuracy show by the confusionMatrix is 99.3% for the out of sample predict.</p>
 </div>
-<div id="answering-the-prediction-assignment" class="section level1">
-<h1><span class="header-section-number">8</span> Answering the prediction assignment</h1>
+<div id="answering-the-course-project-submission" class="section level1">
+<h1><span class="header-section-number">8</span> Answering the Course Project submission</h1>
 <pre class="r"><code>answers &lt;- predict(model,pml_testing2)
 answers &lt;- as.character(answers)
 answers</code></pre>
