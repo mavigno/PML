@@ -1,0 +1,117 @@
+---
+title: "Practical Machine Learning Project"
+author: "Ricardo Cecato Mavigno"
+date: "24 de agosto de 2014"
+output:
+  html_document:
+    number_sections: yes
+---
+
+Summary
+================================================================================
+As part of the Practical Machine Learning course from Johns Hopkins on Coursera, this work will try to predict the manner which subjects that where using devices that permit to collect dat about their activities did exercices. More information about the data can be found at this [link](http://groupware.les.inf.puc-rio.br/har)
+```{r, echo=TRUE}
+#setup environment
+library(caret)
+library(randomForest)
+setwd("~/Documents/R Scripts/PML")
+```
+Loading Data
+================================
+
+```{r, echo=TRUE,cache=TRUE}
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
+              "pml-training.csv",method="curl")
+download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",
+              "pml-testing.csv",method="curl")
+pml_testing <- read.csv("data/pml-testing.csv",na.strings=c("NA",""))
+pml_training <- read.csv("data/pml-training.csv",na.strings=c("NA",""))
+#summary(pml_testing)
+#summary(pml_training)
+```
+
+Cleaning Data
+================================
+```{r, echo=TRUE,cache=TRUE}
+#keep only columns of interest
+colNA <- sapply(pml_training, function(x) {sum(is.na(x))})
+namesNotNA <- names(colNA[colNA==0])
+pml_training2 <- subset(pml_training,select=namesNotNA)
+colNA <- sapply(pml_testing, function(x) {sum(is.na(x))})
+namesNotNA <- names(colNA[colNA==0])
+pml_testing2 <- subset(pml_testing,select=namesNotNA)
+pml_training2 <- pml_training2[,
+                        -which(names(pml_training2) %in% c("X",
+                                                "user_name",
+                                                "raw_timestamp_part_1",
+                                                "raw_timestamp_part_2",
+                                                "cvtd_timestamp",
+                                                "new_window",
+                                                "num_window"))]
+pml_testing2 <- pml_testing2[,
+                        -which(names(pml_testing2) %in% c("X",
+                                                "user_name",
+                                                "raw_timestamp_part_1",
+                                                "raw_timestamp_part_2",
+                                                "cvtd_timestamp",
+                                                "new_window",
+                                                "num_window"))]
+
+```
+Split training data into training and test for cross validation
+===============================================
+```{r, echo=TRUE,cache=TRUE}
+set.seed(289611)
+inTrain <- createDataPartition(y=pml_training2$classe,p=0.6,list=FALSE)
+training <- pml_training2[inTrain,]
+testing <- pml_training2[-inTrain,]
+
+```
+
+Build Model using Random Forests
+================================================
+```{r, echo=TRUE,cache=TRUE}
+model <- train(classe ~ .,data=training,
+               method="rf",prox=TRUE,
+               trControl=trainControl(method = "cv", number = 4, allowParallel = TRUE)) #build model using Random Forests and 4 fold train control
+model
+```
+
+In sample accuracy
+========================
+```{r, echo=TRUE,cache=TRUE}
+train.predict <- predict(model,training)
+confusionMatrix(train.predict,training$classe)
+```
+
+Out of sample accuracy
+======================
+```{r, echo=TRUE,cache=TRUE}
+test.predict <- predict(model,testing)
+confusionMatrix(test.predict,testing$classe)
+```
+
+Answering the prediction assignment
+======================
+```{r, echo=TRUE,cache=TRUE}
+answers <- predict(model,pml_testing2)
+answers <- as.character(answers)
+answers
+
+pml_write_files = function(x) {
+    n = length(x)
+    for (i in 1:n) {
+        filename = paste0("problem_id_", i, ".txt")
+        write.table(x[i], file = filename, quote = FALSE, row.names = FALSE,
+            col.names = FALSE)
+    }
+}
+
+pml_write_files(answers)
+```
+
+
+
+
+
+
